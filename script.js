@@ -422,9 +422,34 @@
                     responsive: true,
                     plugins: {
                         legend: { position: 'right' },
-                        title: { display: true, text: '订单状态分布' }
+                        title: { display: true, text: '订单状态分布' },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const value = context.parsed.y;
+                                    const percentage = ((value / total) * 100).toFixed(1);
+                                    return `${context.label}: ${percentage}%`;
+                                }
+                            }
+                        },
+                        // 在扇形上显示百分比
+                        datalabels: {
+                            color: '#fff',
+                            font: {
+                                weight: 'bold',
+                                size: 12
+                            },
+                            formatter: function(value, context) {
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = ((value / total) * 100).toFixed(1);
+                                return `${percentage}%`;
+                            },
+                            textAlign: 'center'
+                        }
                     }
-                }
+                },
+                plugins: [ChartDataLabels] // 引入 ChartDataLabels 插件
             });
 
             // 国家销售分布
