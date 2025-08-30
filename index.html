@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>跨境电商订单统计工具</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- 顶部导航 -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="bi bi-graph-up me-2"></i>跨境电商订单分析
+            </a>
+        </div>
+    </nav>
+
+    <!-- 主内容区 -->
+    <div class="container my-4">
+        <!-- 仪表盘头部 -->
+        <div class="dashboard-header rounded-3">
+            <div class="container">
+                <div class="title-container">
+                    <div class="header-info">
+                        <h1 class="display-5 fw-bold">月度订单分析</h1>
+                        <div class="d-flex align-items-center">
+                            <p class="lead mb-0">当前数据: </p>
+                            <span class="filename-display ms-2" id="fileDisplay">
+                                <i class="bi bi-file-earmark-text"></i>
+                                <span>未导入数据</span>
+                            </span>
+                        </div>
+                    </div>
+                    <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#uploadModal">
+                        <i class="bi bi-upload me-1"></i>导入数据
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 统计卡片 -->
+        <div class="row mb-4" id="statsContainer">
+            <div class="col-md-12 text-center p-5" id="emptyState">
+                <i class="bi bi-inbox" style="font-size: 4rem; color: #6c757d;"></i>
+                <h4 class="mt-3">尚未导入订单数据</h4>
+                <p class="text-muted">点击上方"导入订单"按钮开始分析</p>
+            </div>
+        </div>
+
+        <!-- 图表区域 -->
+        <div class="row" id="chartsContainer" style="display: none;">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        订单状态分布
+                    </div>
+                    <div class="card-body">
+                        <canvas id="statusChart" height="250"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        销售国家分布 (Top 10)
+                    </div>
+                    <div class="card-body">
+                        <canvas id="countryChart" height="250"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 数据表格区域 -->
+        <div class="row mt-4" id="tablesContainer" style="display: none;">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span class="fw-bold">加急订单</span>
+                        <span class="urgent-badge text-white" id="urgentBadge">0 个待处理</span>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0" id="urgentTable">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>订单ID</th>
+                                        <th>客户姓名</th>
+                                        <th>商品名称</th>
+                                        <th>客户国家</th>
+                                        <th>订单日期</th>
+                                        <th>处理时长</th>
+                                        <th>订单状态</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- 表格内容会通过JS动态生成 -->
+                                </tbody>
+                            </table>
+                            <div id="urgentNoData" style="display:none;">
+                                <div class="alert-nodata my-3">
+                                    <i class="bi bi-check-circle me-2"></i>目前没有需要加急处理的订单
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-white border-top-0 py-3">
+                        <button class="btn btn-export" id="exportBtn">
+                            <i class="bi bi-download me-1"></i>导出加急订单
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 上传文件模态框 -->
+    <div class="modal fade" id="uploadModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">导入月度订单数据</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="upload-area" id="dropArea">
+                        <div class="processing-status" id="processingStatus">
+                            <div class="spinner-border text-primary" role="status"></div>
+                            <p class="mt-2 mb-0">正在处理数据...</p>
+                        </div>
+                        <div id="uploadContent">
+                            <i class="bi bi-cloud-arrow-up" style="font-size: 3rem; color: #6c757d;"></i>
+                            <h5 class="my-3">拖放文件到此处</h5>
+                            <p class="text-muted">支持Excel格式文件</p>
+                            <input type="file" id="fileInput" style="display: none;" accept=".xlsx,.xls,.csv">
+                            <button class="btn btn-primary mt-2" id="selectFileBtn">选择文件</button>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <h6>文件格式要求：</h6>
+                        <ul>
+                            <li>必须包含<strong>订单ID</strong>、<strong>订单日期</strong>、<strong>订单状态</strong>、<strong>商品名称</strong>、<strong>商品数量</strong>、<strong>订单金额</strong>、<strong>客户国家</strong>和<strong>客户姓名</strong>字段</li>
+                            <li>日期格式应为YYYY-MM-DD</li>
+                            <li>建议使用平台导出的原始数据文件</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="script.js"></script>
+
+
+</body>
+</html>
