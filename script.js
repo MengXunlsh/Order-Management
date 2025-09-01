@@ -452,7 +452,7 @@
                 plugins: [ChartDataLabels] // 引入 ChartDataLabels 插件
             });
 
-            // 国家销售分布
+            // 销售国家分布
             const countryCounts = {};
             orders.forEach(order => {
                 const country = order['客户国家'] || '未知';
@@ -484,8 +484,23 @@
                 },
                 options: {
                     responsive: true,
-                    plugins: { legend: { display: false } },
+                    plugins: { 
+                        legend: { display: false },
+                        // 添加 datalabels 配置
+                        datalabels: {
+                            color: '#fff', // 文字颜色为白色
+                            font: {
+                                weight: 'bold',
+                                size: 12
+                            },
+                            formatter: function(value) {
+                                return value; // 显示具体数值
+                            },
+                            textAlign: 'center'
+                        }
+                    },
                     scales: { y: { beginAtZero: true } }
-                }
+                },
+                plugins: [ChartDataLabels]
             });
         }
