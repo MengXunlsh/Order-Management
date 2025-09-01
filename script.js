@@ -3,6 +3,7 @@
         let urgentOrdersList = []; // 存储当前加急订单
         let currentFileName = ""; // 存储当前文件名
         let currentFileExtension = ""; // 存储当前文件扩展名
+        let currentView = 'analysis'; // 当前视图 ('analysis' 或 'overview')
 
         // 状态颜色映射
         const statusColors = {
@@ -20,6 +21,9 @@
             const dropArea = document.getElementById('dropArea');
             const uploadContent = document.getElementById('uploadContent');
             const processingStatus = document.getElementById('processingStatus');
+            const toggleViewBtn = document.getElementById('toggleViewBtn');
+            const analysisView = document.getElementById('analysisView');
+            const overviewView = document.getElementById('overviewView');
 
             // 文件选择按钮
             selectFileBtn.addEventListener('click', function() {
@@ -63,6 +67,23 @@
                     processFile(files[0]);
                 }
             }, false);
+
+            // 视图切换按钮
+            toggleViewBtn.addEventListener('click', function() {
+                if (currentView === 'analysis') {
+                    // 切换到总览视图
+                    analysisView.style.display = 'none';
+                    overviewView.style.display = 'block';
+                    toggleViewBtn.innerHTML = '<i class="bi bi-bar-chart-line me-1"></i>切换到分析';
+                    currentView = 'overview';
+                } else {
+                    // 切换到分析视图
+                    overviewView.style.display = 'none';
+                    analysisView.style.display = 'block';
+                    toggleViewBtn.innerHTML = '<i class="bi bi-layout-text-window-reverse me-1"></i>切换到总览';
+                    currentView = 'analysis';
+                }
+            });
 
             // 导出按钮 - 修复问题：只导出加急订单
             document.getElementById('exportBtn').addEventListener('click', function() {
@@ -249,6 +270,9 @@
 
                     // 更新UI
                     updateDashboard(cleanedOrders);
+
+                    // 显示切换视图按钮
+                    document.getElementById('toggleViewBtn').style.display = 'inline-block';
 
                     // 关闭模态框
                     bootstrap.Modal.getInstance(document.getElementById('uploadModal')).hide();

@@ -27,7 +27,7 @@
             <div class="container">
                 <div class="title-container">
                     <div class="header-info">
-                        <h1 class="display-5 fw-bold">月度订单分析</h1>
+                        <h1 class="display-5 fw-bold">订单分析</h1>
                         <div class="d-flex align-items-center">
                             <p class="lead mb-0">当前数据: </p>
                             <span class="filename-display ms-2" id="fileDisplay">
@@ -36,83 +36,116 @@
                             </span>
                         </div>
                     </div>
-                    <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#uploadModal">
-                        <i class="bi bi-upload me-1"></i>导入数据
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- 统计卡片 -->
-        <div class="row mb-4" id="statsContainer">
-            <div class="col-md-12 text-center p-5" id="emptyState">
-                <i class="bi bi-inbox" style="font-size: 4rem; color: #6c757d;"></i>
-                <h4 class="mt-3">尚未导入订单数据</h4>
-                <p class="text-muted">点击上方"导入订单"按钮开始分析</p>
-            </div>
-        </div>
-
-        <!-- 图表区域 -->
-        <div class="row" id="chartsContainer" style="display: none;">
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">
-                        订单状态分布
-                    </div>
-                    <div class="card-body">
-                        <canvas id="statusChart" height="250"></canvas>
+                    <div>
+                        <button class="btn btn-warning me-2" data-bs-toggle="modal" data-bs-target="#uploadModal">
+                            <i class="bi bi-upload me-1"></i>导入数据
+                        </button>
+                        <button class="btn btn-primary" id="toggleViewBtn" style="display: none;">
+                            <i class="bi bi-layout-text-window-reverse me-1"></i>切换到总览
+                        </button>
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">
-                        销售国家分布 (Top 10)
-                    </div>
-                    <div class="card-body">
-                        <canvas id="countryChart" height="250"></canvas>
+        >
+
+        <!-- 视图切换区域 -->
+        <div id="dashboardViews">
+            <!-- 订单分析视图 -->
+            <div id="analysisView">
+                <!-- 统计卡片 -->
+                <div class="row mb-4" id="statsContainer">
+                    <div class="col-md-12 text-center p-5" id="emptyState">
+                        <i class="bi bi-inbox" style="font-size: 4rem; color: #6c757d;"></i>
+                        <h4 class="mt-3">尚未导入订单数据</h4>
+                        <p class="text-muted">点击上方"导入订单"按钮开始分析</p>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <!-- 数据表格区域 -->
-        <div class="row mt-4" id="tablesContainer" style="display: none;">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <span class="fw-bold">加急订单</span>
-                        <span class="urgent-badge text-white" id="urgentBadge">0 个待处理</span>
-                    </div>
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-hover mb-0" id="urgentTable">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>订单ID</th>
-                                        <th>客户姓名</th>
-                                        <th>商品名称</th>
-                                        <th>客户国家</th>
-                                        <th>订单日期</th>
-                                        <th>处理时长</th>
-                                        <th>订单状态</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <!-- 表格内容会通过JS动态生成 -->
-                                </tbody>
-                            </table>
-                            <div id="urgentNoData" style="display:none;">
-                                <div class="alert-nodata my-3">
-                                    <i class="bi bi-check-circle me-2"></i>目前没有需要加急处理的订单
-                                </div>
+                <!-- 图表区域 -->
+                <div class="row" id="chartsContainer" style="display: none;">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                订单状态分布
+                            </div>
+                            <div class="card-body">
+                                <canvas id="statusChart" height="250"></canvas>
                             </div>
                         </div>
                     </div>
-                    <div class="card-footer bg-white border-top-0 py-3">
-                        <button class="btn btn-export" id="exportBtn">
-                            <i class="bi bi-download me-1"></i>导出加急订单
-                        </button>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                销售国家分布 (Top 10)
+                            </div>
+                            <div class="card-body">
+                                <canvas id="countryChart" height="250"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 数据表格区域 -->
+                <div class="row mt-4" id="tablesContainer" style="display: none;">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <span class="fw-bold">加急订单</span>
+                                <span class="urgent-badge text-white" id="urgentBadge">0 个待处理</span>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-hover mb-0" id="urgentTable">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>订单ID</th>
+                                                <th>客户姓名</th>
+                                                <th>商品名称</th>
+                                                <th>客户国家</th>
+                                                <th>订单日期</th>
+                                                <th>处理时长</th>
+                                                <th>订单状态</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- 表格内容会通过JS动态生成 -->
+                                        </tbody>
+                                    </table>
+                                    <div id="urgentNoData" style="display:none;">
+                                        <div class="alert-nodata my-3">
+                                            <i class="bi bi-check-circle me-2"></i>目前没有需要加急处理的订单
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-white border-top-0 py-3">
+                                <button class="btn btn-export" id="exportBtn">
+                                    <i class="bi bi-download me-1"></i>导出加急订单
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 数据总览视图 -->
+            <div id="overviewView" style="display: none;">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">数据总览</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex justify-content-center align-items-center" style="height: 400px;">
+                                    <div class="text-center">
+                                        <i class="bi bi-bar-chart-fill" style="font-size: 4rem; color: #6c757d;"></i>
+                                        <h3 class="mt-3">数据总览界面</h3>
+                                        <p class="text-muted">此界面将显示更多数据总览信息</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
